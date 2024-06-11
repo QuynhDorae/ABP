@@ -12,8 +12,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace ProductApp.Migrations
 {
     [DbContext(typeof(ProductAppDbContext))]
-    [Migration("20240605184333_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240607031405_Added_Products")]
+    partial class Added_Products
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,37 +30,9 @@ namespace ProductApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("varchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("CreatorId");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("LastModifierId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -69,7 +41,9 @@ namespace ProductApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Appproduct", (string)null);
+                    b.HasIndex("Name");
+
+                    b.ToTable("product", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

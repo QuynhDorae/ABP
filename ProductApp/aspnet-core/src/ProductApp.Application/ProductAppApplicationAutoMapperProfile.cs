@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using ProductApp.Documents;
+using ProductApp.Pages;
 using ProductApp.Products;
 
 namespace ProductApp;
@@ -11,5 +13,7 @@ public class ProductAppApplicationAutoMapperProfile : Profile
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
         CreateMap<Product, ProductDTO>();
+        CreateMap<Document, DocumentDTO>();
+        CreateMap<Page, PageDTO>();
     }
 }

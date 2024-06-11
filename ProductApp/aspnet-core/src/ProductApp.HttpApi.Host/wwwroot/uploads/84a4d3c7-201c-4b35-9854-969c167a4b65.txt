@@ -1,0 +1,18 @@
+lấy ví dụ về api, biết tác dụng và cách config permission và tenant
+nắm được cấu trúc cơ bản của framework 
+
+Cấu trúc dự án ABP mẫu
+Một dự án mẫu sử dụng ABP có thể có cấu trúc như sau:
+
+MyProject.Domain: Chứa các thực thể, repository, và logic nghiệp vụ.
+MyProject.Domain:định nghĩa các hằng số dùng chung trong toàn bộ ứng dụng, đa ngôn ngữ, tenancy
+MyProject.Application: Chứa các dịch vụ ứng dụng và DTO.
+MyProject.ApplicationContractModule : chứa DTO và IService
+MyProject.EntityFrameworkCore: Chứa các cấu hình và migration của Entity Framework Core.
+*Migration :
+-quản lí và thay đổi csdl => khi bạn thay đổi csdl bạn có thể dùng lệnh tạo migartion để ghi lại những thay đổi. 
+-áp dụng các thay đổi vào csdl  => đảm bảo đồng bộ csdl với model
+MyProject.HttpApi: Chứa các API controller.
+MyProject.Web: Chứa giao diện người dùng.
+MyProject.Identity: Quản lý xác thực và người dùng.
+MyProject.AuditLogging: Ghi log các hoạt động.

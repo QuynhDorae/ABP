@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProductApp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -11,88 +12,17 @@ using Volo.Abp.EntityFrameworkCore;
 namespace ProductApp.Migrations
 {
     [DbContext(typeof(ProductAppDbContext))]
-    partial class ProductAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240607031211_AddedAbpSettingsTable")]
+    partial class AddedAbpSettingsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.MySql)
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            modelBuilder.Entity("ProductApp.Bookmarks.Bookmark", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("DocumentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DocumentId");
-
-                    b.HasIndex("PageId");
-
-                    b.ToTable("bookmark", (string)null);
-                });
-
-            modelBuilder.Entity("ProductApp.Documents.Document", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Field")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("LastModificationTime")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("document", (string)null);
-                });
-
-            modelBuilder.Entity("ProductApp.Pages.Page", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("DocumentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PageNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DocumentId");
-
-                    b.ToTable("page", (string)null);
-                });
 
             modelBuilder.Entity("ProductApp.Products.Product", b =>
                 {
@@ -1857,36 +1787,6 @@ namespace ProductApp.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
-            modelBuilder.Entity("ProductApp.Bookmarks.Bookmark", b =>
-                {
-                    b.HasOne("ProductApp.Documents.Document", "Document")
-                        .WithMany("Bookmark")
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProductApp.Pages.Page", "Page")
-                        .WithMany()
-                        .HasForeignKey("PageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-
-                    b.Navigation("Page");
-                });
-
-            modelBuilder.Entity("ProductApp.Pages.Page", b =>
-                {
-                    b.HasOne("ProductApp.Documents.Document", "Document")
-                        .WithMany("Page")
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-                });
-
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
                 {
                     b.HasOne("Volo.Abp.AuditLogging.AuditLog", null)
@@ -2027,13 +1927,6 @@ namespace ProductApp.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ProductApp.Documents.Document", b =>
-                {
-                    b.Navigation("Bookmark");
-
-                    b.Navigation("Page");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

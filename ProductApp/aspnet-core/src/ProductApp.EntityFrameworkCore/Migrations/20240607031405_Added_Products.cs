@@ -5,7 +5,7 @@
 namespace ProductApp.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedProduct : Migration
+    public partial class Added_Products : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Services;
 
 namespace ProductApp.Products
 {
-    public interface IProductService : IApplicationService
+    public interface IProductService
     {
         Task<ProductDTO> GetAsync(int id);
         Task<List<ProductDTO>> GetAllProductsAsync();

@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProductApp.Bookmarks;
+using ProductApp.Documents;
+using ProductApp.Pages;
 using ProductApp.Products;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -55,6 +58,12 @@ public class ProductAppDbContext :
 
     public DbSet<Product> Product { get; set; }
 
+    public DbSet<Document> Document { get; set; }
+
+    public DbSet<Page> Page { get; set; }
+
+    public DbSet<Bookmark> Bookmark { get; set; }
+
     #endregion
 
     public ProductAppDbContext(DbContextOptions<ProductAppDbContext> options)
@@ -82,9 +91,33 @@ public class ProductAppDbContext :
 
         builder.Entity<Product>(b =>
         {
-            b.ToTable(ProductAppConsts.DbTablePrefix + "product", ProductAppConsts.DbSchema);
+            b.ToTable("product");
+            b.Property(x => x.Name)
+                  .HasMaxLength(ProductConsts.MaxNameLength)
+                  .IsRequired();
+            b.HasIndex(x => x.Name);
+        });
+        builder.Entity<Document>(b =>
+        {
+            b.ToTable("document");
             b.ConfigureByConvention();
-            b.Property(x => x.Name).IsRequired().HasMaxLength(128);
+            b.HasMany(x => x.Page).WithOne(x => x.Document).HasForeignKey(x => x.DocumentId);
+            b.HasMany(x => x.Bookmark).WithOne(x => x.Document).HasForeignKey(x => x.DocumentId);
+        });
+
+        builder.Entity<Page>(b =>
+        {
+            b.ToTable("page");
+            b.ConfigureByConvention();
+            b.HasOne(x => x.Document).WithMany(x => x.Page).HasForeignKey(x => x.DocumentId);
+        });
+
+        builder.Entity<Bookmark>(b =>
+        {
+            b.ToTable("bookmark");
+            b.ConfigureByConvention();
+            b.HasOne(x => x.Document).WithMany(x => x.Bookmark).HasForeignKey(x => x.DocumentId);
+            b.HasOne(x => x.Page).WithMany().HasForeignKey(x => x.PageId);
         });
     }
 }

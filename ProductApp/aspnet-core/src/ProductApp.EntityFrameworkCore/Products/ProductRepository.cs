@@ -9,6 +9,7 @@ namespace ProductApp.Products
 {
     public class ProductRepository : EfCoreRepository<ProductAppDbContext, Product, int>, IProductRepository
     {
+
         public ProductRepository(IDbContextProvider<ProductAppDbContext> dbContextProvider) : base(dbContextProvider)
         {
         }
