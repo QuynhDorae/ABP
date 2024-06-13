@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProductApp.Pages;
@@ -47,16 +48,9 @@ namespace ProductApp.Controllers
 
             try
             {
-                using (var reader = new StreamReader(filePath))
-                {
-                    var content = await reader.ReadToEndAsync();
-                    var pageDto = new PageDTO
-                    {
-                        Content = content
-                        // Bạn có thể thiết lập các thuộc tính khác của PageDTO ở đây
-                    };
-                    return Ok(pageDto);
-                }
+                var pageDto = await _pageService.ReadFileContentAsync(fileUrl);
+                return Ok(pageDto);
+
             }
             catch (Exception ex)
             {
@@ -64,6 +58,21 @@ namespace ProductApp.Controllers
                 Console.WriteLine($"An error occurred while reading the file: {ex.Message}");
                 return NotFound("File not found.");
             }
+        }
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAllPage()
+        {
+            var pageDtos = await _pageService.GetAllPage();
+
+            return Ok(pageDtos);
+        }
+
+        [HttpGet("read-book/{documentId}")]
+        public async Task<IActionResult> ReadBook(int documentId)
+        {
+            var pageDtos = await _pageService.ReadBook(documentId);
+
+            return Ok(pageDtos);
         }
     }
 }

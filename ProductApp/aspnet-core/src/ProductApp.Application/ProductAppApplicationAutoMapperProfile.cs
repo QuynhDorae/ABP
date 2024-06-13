@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ProductApp.Bookmarks;
 using ProductApp.Documents;
 using ProductApp.Pages;
 using ProductApp.Products;
@@ -15,5 +16,6 @@ public class ProductAppApplicationAutoMapperProfile : Profile
         CreateMap<Product, ProductDTO>();
         CreateMap<Document, DocumentDTO>();
         CreateMap<Page, PageDTO>();
+        CreateMap<Bookmark, BookmarkDTO>();
     }
 }
