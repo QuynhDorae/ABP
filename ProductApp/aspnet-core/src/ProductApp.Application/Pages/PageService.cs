@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.DependencyInjection;
 
 
@@ -127,6 +128,7 @@ namespace ProductApp.Pages
 
                 var pageResponse = new PageListRespone()
                 {
+                    DocumentId = documentId,
                     Title = document.Title,
                     SumPageNumber = sumPage
                 };
@@ -136,25 +138,38 @@ namespace ProductApp.Pages
 
             return listPage;
         }
-        public async Task<List<PageReadBook>> ReadBook(int documentId)
+        public async Task<PagedResultDto<PageReadBook>> ReadBook(int documentId, int pageNumber)
         {
+            if (pageNumber < 1) pageNumber = 1;
+            int skipCount = (pageNumber - 1) * 1;
             List<Page> pages = await _pageRepository.GetPagesByDocumentId(documentId);
+
+            var totalpage = pages.Count;
+            var sortedPage = pages
+                .Skip(skipCount)
+                .Take(1)
+                .ToList();
+            var pageDtos = ObjectMapper.Map<List<Page>, List<PageReadBook>>(sortedPage);
             var listPage = new List<PageReadBook>();
-            foreach (var page in pages)
+            foreach (var item in sortedPage)
             {
-                var document = await _documentRepository.GetAsync(page.DocumentId);
-                var contentDTO = await ReadFileContentAsync(page.Content);
+                var document = await _documentRepository.GetAsync(item.DocumentId);
+                var contentDTO = await ReadFileContentAsync(item.Content);
                 var pageResponse = new PageReadBook()
                 {
-                    PageId = page.Id,
-                    DocumentId = page.DocumentId,
+                    PageId = item.Id,
+                    DocumentId = item.DocumentId,
                     Title = document.Title,
                     Content = contentDTO.Content,
-                    PageNumber = page.PageNumber
+                    PageNumber = item.PageNumber
                 };
                 listPage.Add(pageResponse);
             }
-            return listPage;
+            return new PagedResultDto<PageReadBook>
+            {
+                Items = listPage,
+                TotalCount = totalpage
+            };
         }
     }
 }

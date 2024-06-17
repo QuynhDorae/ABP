@@ -68,9 +68,9 @@ namespace ProductApp.Controllers
         }
 
         [HttpGet("read-book/{documentId}")]
-        public async Task<IActionResult> ReadBook(int documentId)
+        public async Task<IActionResult> ReadBook(int documentId, int pageNumber)
         {
-            var pageDtos = await _pageService.ReadBook(documentId);
+            var pageDtos = await _pageService.ReadBook(documentId, pageNumber);
 
             return Ok(pageDtos);
         }

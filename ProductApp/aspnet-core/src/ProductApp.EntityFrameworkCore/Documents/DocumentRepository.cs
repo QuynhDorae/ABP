@@ -36,6 +36,12 @@ namespace ProductApp.Documents
             document.LastModificationTime = System.DateTime.Now;
             return await UpdateAsync(document, autoSave: true);
         }
+        public async Task<Document> GetDocumentById(int id)
+        {
+            return await GetAsync(id);
+        }
+
+
     }
 
 }

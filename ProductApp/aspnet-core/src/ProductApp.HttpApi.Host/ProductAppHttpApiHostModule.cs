@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
 using ProductApp.EntityFrameworkCore;
+using ProductApp.Hubs;
 using ProductApp.MultiTenancy;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Serilog;
+using Volo.Abp.AspNetCore.SignalR;
 using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
 using Volo.Abp.Security.Claims;
@@ -41,7 +43,7 @@ namespace ProductApp;
     typeof(AbpAccountWebOpenIddictModule),
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpSwashbuckleModule),
-    typeof(AbpAspNetCoreSin)
+    typeof(AbpAspNetCoreSignalRModule)
 
 )]
 public class ProductAppHttpApiHostModule : AbpModule
@@ -71,6 +73,7 @@ public class ProductAppHttpApiHostModule : AbpModule
         ConfigureVirtualFileSystem(context);
         ConfigureCors(context, configuration);
         ConfigureSwaggerServices(context, configuration);
+        context.Services.AddSignalR();
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -221,5 +224,10 @@ public class ProductAppHttpApiHostModule : AbpModule
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
         app.UseConfiguredEndpoints();
+        // C?u hình endpoints cho SignalR Hubs
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHub<DocumentHub>("/documentHub");
+        });
     }
 }

@@ -17,5 +17,6 @@ public class ProductAppApplicationAutoMapperProfile : Profile
         CreateMap<Document, DocumentDTO>();
         CreateMap<Page, PageDTO>();
         CreateMap<Bookmark, BookmarkDTO>();
+        CreateMap<Page, PageReadBook>();
     }
 }

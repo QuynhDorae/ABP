@@ -11,5 +11,6 @@ namespace ProductApp.Documents
         Task<DocumentDTO> Create(DocumentCreate document);
         Task<DocumentDTO> Update(DocumentUpdate document);
         Task Delete(int id);
+        Task<DocumentDTO> Get(int id);
     }
 }

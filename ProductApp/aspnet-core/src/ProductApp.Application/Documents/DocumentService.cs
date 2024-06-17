@@ -68,7 +68,7 @@ namespace ProductApp.Documents
         public async Task<PagedResultDto<DocumentDTO>> GetAllPage(DocumentPageInput input)
         {
             // Xác định số lượng bỏ qua dựa trên số trang và kích thước trang
-            int skipCount = (input.PageNumber - 1) * input.PageSize;
+            int skipCount = (input.PageNumber - 1) * 10;
 
             // Lấy tổng số lượng Document
             var totalDocuments = await _documentRepository.GetCountAsync();
@@ -80,7 +80,7 @@ namespace ProductApp.Documents
             // Sắp xếp dựa trên input, mặc định là theo CreationTime
             var sortedDocuments = documents
                 .Skip(skipCount)
-                .Take(input.PageSize)
+                .Take(10)
                 .ToList();
 
             // Chuyển đổi sang DocumentDTO
@@ -95,6 +95,16 @@ namespace ProductApp.Documents
             };
 
             return pagedResult;
+        }
+        public async Task<DocumentDTO> Get(int id)
+        {
+            var document = await _documentRepository.GetDocumentById(id);
+            if (document == null)
+            {
+                throw new UserFriendlyException("The document does not exist.");
+            }
+
+            return ObjectMapper.Map<Document, DocumentDTO>(document);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace ProductApp.Pages
 {
@@ -11,6 +12,6 @@ namespace ProductApp.Pages
 
         Task<List<PageListRespone>> GetAllPage();
         Task<ContentPage> ReadFileContentAsync(string fileUrl);
-        Task<List<PageReadBook>> ReadBook(int documentId);
+        Task<PagedResultDto<PageReadBook>> ReadBook(int documentId, int pageNumber);
     }
 }

@@ -24,6 +24,14 @@ namespace ProductApp.Bookmarks
         }
         public async Task<BookmarkDTO> Create(int documentId, int pageId)
         {
+            var exitingBookmark = await _bookmarkRepository.FindByDocumentIdAndPageId(documentId, pageId);
+            if (exitingBookmark != null)
+            {
+                return new BookmarkDTO
+                {
+                    message = "The bookmark already exists."
+                };
+            }
             var a = await _bookmarkRepository.Create(documentId, pageId);
             var document = await _documentRepository.GetAsync(documentId);
             var page = await _pageRepository.GetAsync(pageId);
@@ -46,6 +54,7 @@ namespace ProductApp.Bookmarks
                 var bookmarkDTO = new BookmarkDTO
 
                 {
+                    Id = bookmark.Id,
                     TitleDocument = document.Title,
                     PageNumber = page.PageNumber,
                 };
@@ -72,6 +81,36 @@ namespace ProductApp.Bookmarks
             };
 
             return pageReadBook;
+        }
+        public async Task Delete(int id)
+        {
+            var bookmark = await _bookmarkRepository.GetAsync(id);
+            if (bookmark == null)
+            {
+                throw new UserFriendlyException("The bookmark does not exist.");
+            }
+
+            await _bookmarkRepository.DeleteBookmark(id);
+        }
+        public async Task<List<BookmarkDTO>> getByDocumentId(int documentId)
+        {
+            var list = new List<BookmarkDTO>();
+            var bookmarks = await _bookmarkRepository.GetByDocumentId(documentId);
+
+            foreach (var bookmark in bookmarks)
+            {
+                var page = await _pageRepository.GetAsync(bookmark.PageId);
+                var document = await _documentRepository.GetAsync(bookmark.DocumentId);
+                var bookmarkDTO = new BookmarkDTO
+                {
+                    Id = bookmark.Id,
+                    TitleDocument = document.Title,
+                    PageNumber = page.PageNumber,
+                };
+                list.Add(bookmarkDTO);
+            }
+
+            return list;
         }
     }
 }

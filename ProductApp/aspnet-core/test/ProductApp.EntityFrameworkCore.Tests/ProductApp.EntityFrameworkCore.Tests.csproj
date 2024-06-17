@@ -11,6 +11,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ProductApp.EntityFrameworkCore\ProductApp.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\ProductApp.Application.Tests\ProductApp.Application.Tests.csproj" />
+    <PackageReference Include="Microsoft.AspNet.Cors" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
     <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="8.1.3" />
