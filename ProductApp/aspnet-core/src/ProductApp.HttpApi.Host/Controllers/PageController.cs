@@ -40,6 +40,23 @@ namespace ProductApp.Controllers
 
             return Ok(pageDtos);
         }
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateCreatePage(int pageId, [FromForm] List<IFormFile> file)
+        {
+            if (file == null || file.Count == 0)
+            {
+                return BadRequest("No files were uploaded.");
+            }
+
+            var pageDtos = await _pageService.UpdateUploadFile(pageId, file);
+
+            if (pageDtos == null || pageDtos.Count == 0)
+            {
+                return BadRequest("Failed to upload files.");
+            }
+
+            return Ok(pageDtos);
+        }
         [HttpGet("read-file")]
         public async Task<IActionResult> ReadFileContent(string fileUrl)
         {
@@ -73,6 +90,13 @@ namespace ProductApp.Controllers
             var pageDtos = await _pageService.ReadBook(documentId, pageNumber);
 
             return Ok(pageDtos);
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePage(int id)
+        {
+            await _pageService.DeletePage(id);
+
+            return Ok();
         }
     }
 }

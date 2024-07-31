@@ -13,5 +13,7 @@ namespace ProductApp.Pages
         Task<List<PageListRespone>> GetAllPage();
         Task<ContentPage> ReadFileContentAsync(string fileUrl);
         Task<PagedResultDto<PageReadBook>> ReadBook(int documentId, int pageNumber);
+        Task<List<PageDTO>> UpdateUploadFile(int pageId, List<IFormFile> files);
+        Task DeletePage(int id);
     }
 }

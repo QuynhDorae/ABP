@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
 using ProductApp.Documents;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -92,20 +94,75 @@ namespace ProductApp.Pages
             return ObjectMapper.Map<List<Page>, List<PageDTO>>(pages);
         }
 
+        public async Task<List<PageDTO>> UpdateUploadFile(int pageId, List<IFormFile> files)
+        {
+            var pages = new List<Page>();
+            var page1 = await _pageRepository.GetAsync(pageId);
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                var formFile = files[i];
+
+                if (formFile.Length > 0)
+                {
+                    // Tạo đường dẫn cho thư mục uploads trong wwwroot
+                    var uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                    if (!Directory.Exists(uploadsFolderPath))
+                        Directory.CreateDirectory(uploadsFolderPath);
+
+                    // Tạo tên tệp duy nhất để tránh ghi đè
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName);
+                    var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
+
+                    // Kiểm tra và xóa tệp cũ nếu tồn tại
+                    if (!string.IsNullOrEmpty(page1.Content) && File.Exists(page1.Content))
+                    {
+                        File.Delete(page1.Content);
+                    }
+                    // Lưu tệp vào thư mục uploads
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+
+                    // Tạo URL cho tệp đã lưu
+                    var fileUrl = $"D:\\ABP\\ProductApp\\aspnet-core\\src\\ProductApp.HttpApi.Host\\wwwroot\\uploads\\{uniqueFileName}";
+
+                    page1.Content = fileUrl; // Lưu URL của tệp
+
+
+                    // Lưu trữ đối tượng Page vào cơ sở dữ liệu
+                    var createdPage = await _pageRepository.UpdatePage(page1);
+                    pages.Add(createdPage);
+                }
+            }
+
+            // Chuyển đổi và trả về kết quả
+            return ObjectMapper.Map<List<Page>, List<PageDTO>>(pages);
+        }
+
         public async Task<ContentPage> ReadFileContentAsync(string fileUrl)
         {
             var filePath = Path.Combine(_environment.WebRootPath, fileUrl.TrimStart('/'));
 
             try
             {
-                using (var reader = new StreamReader(filePath))
+                if (Path.GetExtension(filePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
                 {
-                    var content = await reader.ReadToEndAsync();
-                    return new ContentPage
-                    {
-                        Content = content
+                    return await ReadPdfContentAsync(filePath);
+                }
+                else if (Path.GetExtension(filePath).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+                {
+                    return await ReadTextContentAsync(filePath);
 
-                    };
+                }
+                else if (Path.GetExtension(filePath).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    return await ReadExcelContentAsync(filePath);
+                }
+                else
+                {
+                    throw new NotSupportedException("File type not supported.");
                 }
             }
             catch (Exception ex)
@@ -113,6 +170,77 @@ namespace ProductApp.Pages
                 Console.WriteLine($"An error occurred while reading the file: {ex.Message}");
                 throw new FileNotFoundException("File not found.", ex);
             }
+        }
+        private async Task<ContentPage> ReadTextContentAsync(string filePath)
+        {
+            using (var reader = new StreamReader(filePath))
+            {
+                var content = await reader.ReadToEndAsync();
+                return new ContentPage
+                {
+                    Content = content
+                };
+            }
+        }
+        private async Task<ContentPage> ReadPdfContentAsync(string filePath)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    var textExtractor = new SimplePdfTextExtractor();
+                    var text = textExtractor.Extract(filePath);
+
+                    return new ContentPage
+                    {
+                        Content = text
+                    };
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred while reading the PDF file: {ex.Message}");
+                    throw;
+                }
+            });
+        }
+
+        private async Task<ContentPage> ReadExcelContentAsync(string filePath)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    using (var package = new ExcelPackage(new FileInfo(filePath)))
+                    {
+                        var workbook = package.Workbook;
+                        var sb = new StringBuilder();
+
+                        foreach (var worksheet in workbook.Worksheets)
+                        {
+                            sb.AppendLine($"Sheet: {worksheet.Name}");
+                            for (int row = worksheet.Dimension.Start.Row; row <= worksheet.Dimension.End.Row; row++)
+                            {
+                                for (int col = worksheet.Dimension.Start.Column; col <= worksheet.Dimension.End.Column; col++)
+                                {
+                                    sb.Append($"{worksheet.Cells[row, col].Text}\t");
+                                }
+                                sb.AppendLine();
+                            }
+                            sb.AppendLine();
+                        }
+
+                        return new ContentPage
+                        {
+                            Content = sb.ToString()
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred while reading the Excel file: {ex.Message}");
+                    throw;
+                }
+            });
         }
         public async Task<List<PageListRespone>> GetAllPage()
         {
@@ -170,6 +298,10 @@ namespace ProductApp.Pages
                 Items = listPage,
                 TotalCount = totalpage
             };
+        }
+        public async Task DeletePage(int id)
+        {
+            await _pageRepository.DeletePage(id);
         }
     }
 }

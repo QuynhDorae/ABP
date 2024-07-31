@@ -19,6 +19,11 @@ namespace ProductApp.Pages
 
             return await InsertAsync(page, autoSave: true);
         }
+        public async Task<Page> UpdatePage(Page page)
+        {
+            var a = await UpdateAsync(page, autoSave: true);
+            return a;
+        }
         public async Task<List<Page>> GetAllPage()
         {
             var dbSet = await GetDbSetAsync();
@@ -30,6 +35,10 @@ namespace ProductApp.Pages
             var dbSet = await GetDbSetAsync();
             var a = await dbSet.Where(x => x.DocumentId == documentId).ToListAsync();
             return a;
+        }
+        public async Task DeletePage(int id)
+        {
+            await DeleteAsync(id, autoSave: true);
         }
     }
 

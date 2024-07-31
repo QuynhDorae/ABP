@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
 using OpenIddict.Validation.AspNetCore;
 using ProductApp.EntityFrameworkCore;
 using ProductApp.Hubs;
@@ -65,6 +66,8 @@ public class ProductAppHttpApiHostModule : AbpModule
     {
         var configuration = context.Services.GetConfiguration();
         var hostingEnvironment = context.Services.GetHostingEnvironment();
+        // Thi?t l?p thu?c tính LicenseContext
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
         ConfigureAuthentication(context);
         ConfigureBundles();
